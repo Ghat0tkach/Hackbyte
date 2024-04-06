@@ -8,6 +8,10 @@
 *.log
 *.log.*
 *.sig
-
+.*/
+__pycache__/
 pkg/
 src/
+../shortz-env/
+public/
+client_secret.json
