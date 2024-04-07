@@ -1,20 +1,40 @@
-import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
-import React from "react";
-import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Swap from "./pages/Swap";
+import { Box, CssBaseline, ThemeProvider } from "@mui/material";
+import { ColorModeContext, useMode } from "./theme";
+import { Navbar, SideBar } from "./scenes";
+import { Outlet } from "react-router-dom";
+import { createContext, useState } from "react";
+export const ToggledContext = createContext(null);
 
-const App = () => {
-
+function App() {
+  const [theme, colorMode] = useMode();
+  const [toggled, setToggled] = useState(false);
+  const values = { toggled, setToggled };
   return (
-    <div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      
-        <Route path="/swap" element={<Swap />} />
-      </Routes>
-    </div>
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ToggledContext.Provider value={values}>
+          <Box sx={{ display: "flex", height: "100vh", maxWidth: "100%" }}>
+            <SideBar />
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+                maxWidth: "100%",
+              }}
+            >
+              <Navbar />
+              <Box sx={{ overflowY: "auto", flex: 1, maxWidth: "100%" }}>
+                <Outlet />
+              </Box>
+            </Box>
+          </Box>
+        </ToggledContext.Provider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
-};
+}
 
 export default App;
