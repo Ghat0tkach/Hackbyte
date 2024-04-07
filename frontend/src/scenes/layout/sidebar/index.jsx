@@ -66,18 +66,13 @@ const SideBar = () => {
                 gap="12px"
                 sx={{ transition: ".3s ease" }}
               >
-                <img
-                  style={{ width: "30px", height: "30px", borderRadius: "8px" }}
-                  src={logo}
-                  alt="Argon"
-                />
                 <Typography
                   variant="h4"
                   fontWeight="bold"
                   textTransform="capitalize"
                   color={colors.greenAccent[500]}
                 >
-                  Argon
+                  QuickSnap.AI
                 </Typography>
               </Box>
             )}
@@ -111,7 +106,7 @@ const SideBar = () => {
               fontWeight="500"
               color={colors.greenAccent[500]}
             >
-              VP Fancy Admin
+              Part Time Billionaire , Full Time Superhero
             </Typography>
           </Box>
         </Box>

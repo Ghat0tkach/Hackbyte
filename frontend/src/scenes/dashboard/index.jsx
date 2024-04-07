@@ -5,8 +5,15 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  TextField,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  MenuItem,
+  InputLabel,
+  Select,
 } from "@mui/material";
-import { TextField } from "@mui/material";
 import {
   Header,
   StatBox,
@@ -28,6 +35,7 @@ import { tokens } from "../../theme";
 import { mockTransactions } from "../../data/mockData";
 import { Help, Margin } from "@mui/icons-material";
 import Loader from "../contacts/components/Loader";
+import Slider from "../../components/Slider";
 
 function Dashboard() {
   const theme = useTheme();
@@ -50,7 +58,38 @@ function Dashboard() {
 
   const [scriptAnswer, setScriptAnswer] = useState("");
   const [showScriptBox, setShowScriptBox] = useState(false);
+  const [videoSelection, setVideoSelection] = useState("slider");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [sliderValue, setSliderValue] = useState(0);
 
+  const handleVideoSelectionChange = (event) => {
+    setVideoSelection(event.target.value);
+  };
+  const [backgroundMusicUrl, setBackgroundMusicUrl] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
+
+  const handleBackgroundMusicUrlChange = (event) => {
+    setBackgroundMusicUrl(event.target.value);
+  };
+
+  const handleLanguageChange = (event) => {
+    setSelectedLanguage(event.target.value);
+  };
+
+  const handleVideoUrlChange = (event) => {
+    setVideoUrl(event.target.value);
+  };
+
+  const handleSliderChange = (event, newValue) => {
+    setSliderValue(newValue);
+  };
+
+  const handleSubmit = () => {
+    // Use videoSelection, videoUrl, and sliderValue for API call
+    console.log("Video Selection:", videoSelection);
+    console.log("Video URL:", videoUrl);
+    console.log("Slider Value:", sliderValue);
+  };
   const handleBrandNameChange = (event) => {
     setBrandNameAnswer(event.target.value);
   };
@@ -68,7 +107,37 @@ function Dashboard() {
     setShowScriptBox(!showScriptBox);
     setShowBrandNameBox(false);
   };
+  const handleVideoGenerate = async () => {
+    const url = "http://127.0.0.1:8000/video/generate-content";
 
+    const requestBody = {
+      topic: `${scriptAnswer}`,
+      background_video_url: `${videoUrl}`,
+      background_music_url: `${backgroundMusicUrl}`,
+      num_images: 10,
+      module_language: `${selectedLanguage}`,
+      is_script: true,
+      script: `${scriptAnswer}`,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const responseData = await response.json();
+      console.log("Response:", responseData);
+      // Handle the response here
+    } catch (error) {
+      console.error("Error:", error);
+      // Handle error
+    }
+  };
   const handleBrandNameSubmit = async () => {
     setLoading(true);
 
@@ -290,17 +359,97 @@ function Dashboard() {
           </Box>
         )}
       </Box>
+      <Box mt={5}>
+        <Box>
+          {/* Video Selection */}
+          <FormControl component="fieldset" sx={{ mb: 2 }}>
+            <RadioGroup
+              aria-label="videoSelection"
+              name="videoSelection"
+              value={videoSelection}
+              onChange={handleVideoSelectionChange}
+              row
+            >
+              <FormControlLabel
+                value="slider"
+                control={<Radio />}
+                label="Choose from Slider"
+              />
+              <FormControlLabel
+                value="custom"
+                control={<Radio />}
+                label="Enter URL"
+              />
+            </RadioGroup>
+          </FormControl>
 
-      <slider />
+          {/* Video URL Input */}
+          {videoSelection === "custom" && (
+            <TextField
+              label="Video URL"
+              variant="outlined"
+              value={videoUrl}
+              onChange={handleVideoUrlChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+          )}
+
+          {/* Slider for Video Selection */}
+          {videoSelection === "slider" && (
+            <Box mt={5}>
+              <Slider
+                value={sliderValue}
+                onChange={handleSliderChange}
+                aria-labelledby="continuous-slider"
+              />
+            </Box>
+          )}
+
+          {/* Submit Button */}
+          <Button variant="contained" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Box>
+        <Box display="flex" alignItems="center">
+          {/* Background Music URL Input */}
+          <TextField
+            label="Background Music URL"
+            variant="outlined"
+            value={backgroundMusicUrl}
+            onChange={handleBackgroundMusicUrlChange}
+            fullWidth
+            sx={{ mr: 1 }}
+          />
+
+          {/* Language Selection Dropdown */}
+          <FormControl variant="outlined" fullWidth sx={{ minWidth: 120 }}>
+            <InputLabel id="language-label">Language</InputLabel>
+            <Select
+              labelId="language-label"
+              id="language-select"
+              value={selectedLanguage}
+              onChange={handleLanguageChange}
+              label="Language"
+            >
+              <MenuItem value="English">English</MenuItem>
+              <MenuItem value="Spanish">Spanish</MenuItem>
+              {/* Add more language options as needed */}
+            </Select>
+          </FormControl>
+
+          {/* Submit Button */}
+        </Box>
+      </Box>
 
       {/* Generate Button */}
       <Box mt={2} display="flex">
         <Button
           variant="contained"
           style={{ backgroundColor: "blue" }}
-          onClick={handleScriptGenerate}
+          onClick={handleVideoGenerate}
         >
-          Generate
+          Generate Shorts!
         </Button>
       </Box>
     </Box>

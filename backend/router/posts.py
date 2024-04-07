@@ -16,7 +16,7 @@ async def create_post_route(post: PostCreate, db=Depends(get_db)):
         raise HTTPException(status_code=500, detail="Failed to create the post.")
     return new_post
 
-@router.get("/posts/", response_model=List[Post])
+@router.get("/get_posts/", response_model=List[Post])
 async def read_all_posts_route(db=Depends(get_db)):
     posts = await db["posts"].find().to_list(length=None)  # No filter to get all posts
     if not posts:
